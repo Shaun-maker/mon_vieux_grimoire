@@ -7,6 +7,6 @@ const bookSchema = mongoose.Schema({
     urlImage: {type: String, required: true},
     rates: {type: Number},
     type: {type: String, required: true}
-})
+});
 
 module.exports = mongoose.model('Book', bookSchema);
