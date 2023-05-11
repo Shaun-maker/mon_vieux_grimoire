@@ -2,8 +2,8 @@ const express = require('express');
 
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
-    res.status(200).json({ message: "Requête GET bien reçue, route OK !"});
-});
+const bookCtrl = require('../controllers/book');
+
+router.get('/', bookCtrl.getAllBooks);
 
 module.exports = router;
