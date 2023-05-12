@@ -20,7 +20,9 @@ app.use((req, res, next) => {
   });
 
 const bookRoutes = require('./routes/book');
+const userRoutes = require('./routes/user');
 
 app.use('/api/books', bookRoutes);
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
