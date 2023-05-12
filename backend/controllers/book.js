@@ -13,6 +13,19 @@ exports.createBook = (req, res) => {
     .catch((error) => res.status(400).json({ error }));
 }
 
+exports.modifyBook = (req, res) => {
+    const bookRequest = { ...req.body };
+    
+    // add user id check here
+    Book.findOne({ _id: req.params.id })
+    .then((book) => {
+        Book.updateOne({ _id: req.params.id }, { ...bookRequest })
+        .then(() => res.status(200).json({ message: 'Livre modifié !' }))
+        .catch((error) => res.status(401).json({ message: 'Not authorized' }));
+    })
+    .catch((error) => res.status(400).json({ error }));
+}
+
 exports.deleteBook = (req, res) => {
     Book.findOne({ _id: req.params.id })
     .then((book) => {
