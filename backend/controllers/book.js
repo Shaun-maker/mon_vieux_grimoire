@@ -2,9 +2,12 @@ const Book = require('../models/Book');
 
 exports.createBook = (req, res) => {
     const bookObject = JSON.parse(req.body.book);
+    console.log(bookObject);
     
     const book = new Book({
-        ...bookObject
+        ...bookObject,
+        userId: req.auth.userId,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
 
     book.save()
