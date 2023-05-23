@@ -16,12 +16,15 @@ exports.createBook = (req, res) => {
 }
 
 exports.modifyBook = (req, res) => {
-    const bookRequest = { ...req.body };
+    const bookObject = req.file ? {
+        ...JSON.parse(req.body.book),
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
     
     // add user id check here
     Book.findOne({ _id: req.params.id })
     .then((book) => {
-        Book.updateOne({ _id: req.params.id }, { ...bookRequest })
+        Book.updateOne({ _id: req.params.id }, { ...bookObject })
         .then(() => res.status(200).json({ message: 'Livre modifié !' }))
         .catch((error) => res.status(401).json({ message: 'Not authorized' }));
     })
