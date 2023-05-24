@@ -27,7 +27,7 @@ exports.modifyBook = (req, res) => {
         if (book.userId != req.auth.userId) {
             res.status(401).json({ message: 'Not authorized' });
         } else {
-            /* If we change images, we want to delete the old images */
+            /* If we update images, we want to delete the old images */
             if (req.file) {
                 const oldFilePath = "images/" + book.imageUrl.split("/images/")[1];
                 fs.unlink(oldFilePath, (error) => {
