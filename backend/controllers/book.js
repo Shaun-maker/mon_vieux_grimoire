@@ -21,12 +21,23 @@ exports.modifyBook = (req, res) => {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
     
-    // add user id check here
+    delete bookObject._userId;
     Book.findOne({ _id: req.params.id })
     .then((book) => {
-        Book.updateOne({ _id: req.params.id }, { ...bookObject })
-        .then(() => res.status(200).json({ message: 'Livre modifié !' }))
-        .catch((error) => res.status(401).json({ message: 'Not authorized' }));
+        if (book.userId != req.auth.userId) {
+            res.status(401).json({ message: 'Not authorized' });
+        } else {
+            /* If we change images, we want to delete the old images */
+            if (req.file) {
+                const oldFilePath = "images/" + book.imageUrl.split("/images/")[1];
+                fs.unlink(oldFilePath, (error) => {
+                    if (error) console.log(error);
+                });
+            }
+            Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+            .then(() => res.status(200).json({ message: 'Livre modifié !' }))
+            .catch((error) => res.status(401).json({ error }));
+        }
     })
     .catch((error) => res.status(400).json({ error }));
 }
