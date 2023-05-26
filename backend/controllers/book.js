@@ -71,3 +71,21 @@ exports.getOneBooks = (req, res) => {
     .then((book) => res.status(200).json(book))
     .catch((error) => res.status(404).json({ error }));
 }
+
+exports.rateBook = (req, res, next) => {
+    console.log(req.body.rating);
+    console.log(req.body.userId);
+    console.log(req.params.id);
+    const bookRate = { ...req.body };
+
+    Book.findOne({ _id: req.params.id })
+    .then((book) => {
+        if (book.userId === req.auth.userId) {
+            res.status(401).json({ message: "Not authorized" });
+        }
+        else {
+            console.log(book);
+        }
+    })
+    .catch((error) => res.status(404).json({ error }));
+}
