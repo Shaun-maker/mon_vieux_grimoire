@@ -29,6 +29,8 @@ app.use((req, res, next) => {
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
 
+// app.get('/api/books/bestrating', () => {console.log("hello")});
+
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
