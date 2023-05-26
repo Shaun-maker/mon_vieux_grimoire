@@ -82,7 +82,14 @@ exports.rateBook = (req, res, next) => {
         }
         else {
             book.ratings.push({ userId: req.body.userId, grade: req.body.rating });
-            Book.updateOne({ _id: req.params.id }, { ratings: book.ratings, _id: req.params.id })
+            let count = 0;
+            let total = 0;
+            book.ratings.forEach(rating => {
+                total += rating.grade;
+                count++;
+            });
+            const avg = Math.round(total / count);
+            Book.updateOne({ _id: req.params.id }, { ratings: book.ratings, averageRating: avg })
             .then(() => res.status(200).json( book ))
             .catch((error) => res.status(401).json({ message: "Mon erreur" }));
         }
