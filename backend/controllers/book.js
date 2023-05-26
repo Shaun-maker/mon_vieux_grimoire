@@ -82,7 +82,6 @@ exports.rateBook = (req, res, next) => {
         }
         else {
             book.ratings.push({ userId: req.body.userId, grade: req.body.rating });
-            console.log(book);
             Book.updateOne({ _id: req.params.id }, { ratings: book.ratings, _id: req.params.id })
             .then(() => res.status(200).json( book ))
             .catch((error) => res.status(401).json({ message: "Mon erreur" }));
