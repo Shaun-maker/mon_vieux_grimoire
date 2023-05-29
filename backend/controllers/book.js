@@ -1,16 +1,27 @@
 const Book = require('../models/Book');
 const fs = require('fs');
+const sharp = require('sharp');
 
 exports.createBook = (req, res) => {
     const bookObject = JSON.parse(req.body.book);
 
     if (!req.file) return;
     
+    const imagePath = "/images/" + req.file.filename;
+    
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl: `${req.protocol}://${req.get('host')}${imagePath}`
     });
+
+    sharp(imagePath)
+        .resize(800)
+        .toFile(req.file.filename)
+        .then(() => {
+            console.log("Resize image " + req.file.filename);
+        })
+        .catch((error) => console.log(error)); 
 
     book.save()
     .then(() => { res.status(201).json({ message: 'Livre enregistré !'})})
