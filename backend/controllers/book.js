@@ -2,16 +2,16 @@ const Book = require('../models/Book');
 const fs = require('fs');
 const sharp = require('sharp');
 
+const MIME_TYPES = {
+    'image/jpg': 'jpg',
+    'image/jpeg': 'jpg',
+    'image/png': 'png'
+};
+
 exports.createBook = (req, res) => {
     if (!req.file) return;
     
     const bookObject = JSON.parse(req.body.book);
-
-    const MIME_TYPES = {
-        'image/jpg': 'jpg',
-        'image/jpeg': 'jpg',
-        'image/png': 'png'
-    };
 
     let name = req.file.originalname.split(' ').join('_').split(".").shift();
     const extension = MIME_TYPES[req.file.mimetype];
@@ -36,9 +36,14 @@ exports.createBook = (req, res) => {
 }
 
 exports.modifyBook = (req, res) => {
+    if (req.file) {
+        var name = req.file.originalname.split(' ').join('_').split(".").shift();
+        const extension = MIME_TYPES[req.file.mimetype];
+        name += Date.now() + '.' + extension;
+    }
     const bookObject = req.file ? {
         ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${name}`
     } : { ...req.body };
     
     delete bookObject._userId;
@@ -53,6 +58,11 @@ exports.modifyBook = (req, res) => {
                 fs.unlink(oldFilePath, (error) => {
                     if (error) console.log(error);
                 });
+            
+                sharp(req.file.buffer)
+                .resize({ height: 500 })
+                .toFile(`images/${name}`)
+                .catch((error) => console.log(error));
             }
             Book.updateOne({ _id: req.params.id }, { ...bookObject })
             .then(() => res.status(200).json({ message: 'Livre modifié !' }))
