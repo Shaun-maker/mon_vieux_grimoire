@@ -9,9 +9,19 @@ exports.createBook = (req, res) => {
     
     console.log(req.file);
 
-    sharp(req.file.path)
-    .resize({ width: 500 })
-    .toFile(`images/resize-${req.file.filename}`)
+    const MIME_TYPES = {
+        'image/jpg': 'jpg',
+        'image/jpeg': 'jpg',
+        'image/png': 'png'
+    };
+
+    let name = req.file.originalname.split(' ').join('_').split(".").shift();
+    const extension = MIME_TYPES[req.file.mimetype];
+    name += Date.now() + '.' + extension;
+
+    sharp(req.file.buffer)
+    .resize({ height: 500 })
+    .toFile(`images/${name}`)
     .then(data => {
         console.log(data)
     })
@@ -20,7 +30,7 @@ exports.createBook = (req, res) => {
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get('host')}/${req.file.path}`
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${name}`
     });
 
     book.save()
