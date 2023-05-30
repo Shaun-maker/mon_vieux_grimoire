@@ -3,11 +3,9 @@ const fs = require('fs');
 const sharp = require('sharp');
 
 exports.createBook = (req, res) => {
-    const bookObject = JSON.parse(req.body.book);
-
     if (!req.file) return;
     
-    console.log(req.file);
+    const bookObject = JSON.parse(req.body.book);
 
     const MIME_TYPES = {
         'image/jpg': 'jpg',
@@ -22,10 +20,7 @@ exports.createBook = (req, res) => {
     sharp(req.file.buffer)
     .resize({ height: 500 })
     .toFile(`images/${name}`)
-    .then(data => {
-        console.log(data)
-    })
-    .catch((error) => console.log("error here: " + error));
+    .catch((error) => console.log(error));
     
     const book = new Book({
         ...bookObject,
