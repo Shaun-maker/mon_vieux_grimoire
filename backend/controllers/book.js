@@ -7,12 +7,11 @@ exports.createBook = (req, res) => {
 
     if (!req.file) return;
     
-    const imagePath = "/images/" + req.file.filename;
     console.log(req.file);
 
     sharp(req.file.path)
     .resize({ width: 500 })
-    .toFile("hello.jpg")
+    .toFile(`images/resize-${req.file.filename}`)
     .then(data => {
         console.log(data)
     })
