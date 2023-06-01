@@ -27,14 +27,10 @@ exports.createBook = (req, res) => {
 }
 
 exports.modifyBook = (req, res) => {
-    if (req.file) {
-        var name = req.file.originalname.split(' ').join('_').split(".").shift();
-        const extension = MIME_TYPES[req.file.mimetype];
-        name += Date.now() + '.' + extension;
-    }
+
     const bookObject = req.file ? {
         ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${name}`
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
     
     delete bookObject._userId;
@@ -49,11 +45,6 @@ exports.modifyBook = (req, res) => {
                 fs.unlink(oldFilePath, (error) => {
                     if (error) console.log(error);
                 });
-            
-                sharp(req.file.buffer)
-                .resize({ height: 500 })
-                .toFile(`images/${name}`)
-                .catch((error) => console.log(error));
             }
             Book.updateOne({ _id: req.params.id }, { ...bookObject })
             .then(() => res.status(200).json({ message: 'Livre modifié !' }))
