@@ -12,20 +12,11 @@ exports.createBook = (req, res) => {
     if (!req.file) return;
     
     const bookObject = JSON.parse(req.body.book);
-
-    let name = req.file.originalname.split(' ').join('_').split(".").shift();
-    const extension = MIME_TYPES[req.file.mimetype];
-    name += Date.now() + '.' + extension;
-
-    sharp(req.file.buffer)
-    .resize({ height: 500 })
-    .toFile(`images/${name}`)
-    .catch((error) => console.log(error));
     
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${name}`
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
 
     book.save()
