@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
     req.file.filename = name;
 
     sharp(req.file.buffer)
-    .resize({ height: 500 })
+    .resize({ height: 540 })
     .toFile(`images/${name}`)
     .catch((error) => console.log(error));
     next();
